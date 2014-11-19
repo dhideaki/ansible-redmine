@@ -1,0 +1,10 @@
+---
+- hosts: all
+  sudo: yes
+  roles:
+    - common
+
+- hosts: web
+  sudo: yes
+  roles:
+    - redmine

@@ -1,0 +1,17 @@
+---
+# file: roles/common/tasks/main.yml
+
+- apt: update_cache=yes
+- apt: upgrade=dist
+
+- apt: name=language-pack-ja state=latest
+
+- locale_gen: name=ja_JP.UTF-8 state=present
+  notify:
+    - update locales
+
+- name: set timezone variables
+  copy: content="Asia/Tokyo\n" dest=/etc/timezone backup=yes
+  notify:
+    - update locales
+    - update timezone

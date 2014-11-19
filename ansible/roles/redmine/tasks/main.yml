@@ -1,0 +1,60 @@
+---
+
+- name: install tools
+  apt: name={{item}} state=latest
+  with_items:
+    - libtool
+    - git
+    - bundler
+    - unzip
+
+- name: install apache2
+  apt: name=apache2 state=latest
+- name: install php packages
+  apt: name={{item}} state=latest
+  with_items:
+    - php5
+    - php5-dev
+    - php5-mysql
+    - php-pear
+  notify:
+    - restart apache2
+
+- name: install php5-mcrypt
+  apt: name=php5-mcrypt state=latest
+  notify:
+    - enable php5-mcrypt
+    - restart apache2
+
+- name: install mysql
+  apt: name={{item}} state=latest
+  with_items:
+    - mysql-server
+    - mysql-client
+    - python-mysqldb
+  notify:
+    - set mysql root passwd
+
+- name: install phpmyadmin
+  apt: name=phpmyadmin state=latest
+- name: link phpmyadmin
+  file: src=/etc/phpmyadmin/apache.conf dest=/etc/apache2/conf-enabled/phpmyadmin.conf state=link
+  notify:
+    - restart apache2
+
+- name: install redmine
+  apt: name={{item}} state=latest
+  with_items:
+    - libapache2-mod-passenger
+    - redmine-mysql
+    - redmine
+  notify:
+    - passenger.conf edit
+    - passenger apache.conf add
+    - passenger link1
+    - passenger link2
+    - restart apache2
+
+- file: path=/usr/share/redmine owner=www-data group=www-data recurse=yes
+  notify:
+    - restart apache2

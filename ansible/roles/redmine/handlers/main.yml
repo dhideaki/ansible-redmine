@@ -1,0 +1,24 @@
+---
+
+# passenger
+- name: passenger.conf edit
+  replace:
+    dest: /etc/apache2/mods-available/passenger.conf
+    regexp: '</IfModule>'
+    replace: '  PassengerDefaultUser www-data\n</IfModule>'
+    backup: yes
+- name: passenger apache.conf add
+  shell: echo 'Alias /redmine /usr/share/redmine/public\nRackBaseURI /redmine' > /etc/redmine/apache.conf
+- name: passenger link1
+  file: src=/etc/redmine/apache.conf dest=/etc/apache2/conf-enabled/redmine.conf state=link
+- name: passenger link2
+  file: src=/usr/share/redmine/public dest=/var/www/html/redmine state=link
+
+- name: enable php5-mcrypt
+  command: php5enmod mcrypt
+
+- name: set mysql root passwd
+  mysql_user: name=root password={{ mysql_root_passwd }} state=present
+
+- name: restart apache2
+  service: name=apache2 state=restarted
