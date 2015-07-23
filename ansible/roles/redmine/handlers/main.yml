@@ -14,6 +14,8 @@
 - name: passenger link2
   file: src=/usr/share/redmine/public dest=/var/www/html/redmine state=link
 
+- name: enable apache rewrite
+  command: a2enmod rewrite
 - name: enable php5-mcrypt
   command: php5enmod mcrypt
 
